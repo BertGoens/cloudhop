@@ -18,11 +18,9 @@
 *
 * Authored by: Bert Goens <bertgoens@gmail.com>
 */
-using Gtk;
 
-public class App : Gtk.Application { 
-
-    public App () {
+public class Cloudhop : Gtk.Application { 
+    public Cloudhop () {
         Object (
             application_id: "com.github.bertgoens.cloudhop",
             flags: ApplicationFlags.FLAGS_NONE
@@ -30,21 +28,25 @@ public class App : Gtk.Application {
     }
 
     protected override void activate () {
-        var main_window = new Gtk.ApplicationWindow (this);
+        var app_window = new MainWindow (this);
+        app_window.show_all ();
 
-        main_window.destroy.connect (Gtk.main_quit);
+        var quit_action = new SimpleAction ("quit", null);
 
-        main_window.default_height = 300;
-        main_window.default_width = 300;
-        main_window.title = "Cloudhop";
-        main_window.border_width = 10;
-        main_window.window_position = WindowPosition.CENTER;
+        add_action (quit_action);
+        set_accels_for_action ("app.quit", {"Escape"});
 
-        main_window.show_all ();
+        quit_action.activate.connect (() => {
+            if (app_window != null) {
+                app_window.destroy ();
+            }
+        });
     }
 
     public static int main (string[] args) {
-        var app = new App ();
+        Gtk.init (ref args);
+
+        var app = new Cloudhop ();
         return app.run (args);
     }
 }
