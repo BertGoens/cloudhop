@@ -2,7 +2,7 @@
 Name=Cloudhop
 GenericName=Cloudhop
 Comment=Create app launcher icons for websites
-Categories=Utility;Debug;
+Categories=Utility;Programming;
 Exec=com.github.bertgoens.cloudhop
 Icon=com.github.bertgoens.cloudhop
 Terminal=false

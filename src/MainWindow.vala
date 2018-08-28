@@ -42,7 +42,7 @@ public class MainWindow : Gtk.Window {
         header_context.add_class (Gtk.STYLE_CLASS_FLAT);
 
         var favicon = new Gtk.Image.from_icon_name ("com.github.bertgoens.cloudhop", Gtk.IconSize.INVALID);
-        favicon.pixel_size = 128;
+        favicon.pixel_size = 512;
         favicon.margin_bottom = 12;
         set_titlebar (header);
 
