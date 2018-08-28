@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Cloudhop
+GenericName=Cloudhop
+Comment=Create app launcher icons for websites
+Categories=Utility;Debug;
+Exec=com.github.bertgoens.cloudhop
+Icon=com.github.bertgoens.cloudhop
+Terminal=false
+Type=Application
+Keywords=desktop;internet;website;favorite;launcher;
