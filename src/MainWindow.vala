@@ -26,29 +26,117 @@ public class MainWindow : Gtk.Window {
             application: application,
             border_width: 0,
             icon_name: "com.github.bertgoens.cloudhop",
-            resizable: false,
+            height_request: 700,
+            width_request: 500,
             title: "Cloudhop",
             window_position: Gtk.WindowPosition.CENTER
         );
     }
 
     construct {
-
-        var header = new Gtk.HeaderBar ();
-        header.show_close_button = true;
-        var header_context = header.get_style_context ();
-        header_context.add_class ("titlebar");
-        header_context.add_class ("default-decoration");
-        header_context.add_class (Gtk.STYLE_CLASS_FLAT);
-
-        var favicon = new Gtk.Image.from_icon_name ("com.github.bertgoens.cloudhop", Gtk.IconSize.INVALID);
-        favicon.pixel_size = 512;
-        favicon.margin_bottom = 12;
+        var header = make_headerbar ();
         set_titlebar (header);
 
-        var main_layout = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
-        main_layout.add (favicon);
+        var body = make_body ();
+        add (body);
+    }
 
-        add (main_layout);
+    private Gtk.HeaderBar make_headerbar () {
+        var gtk_settings = Gtk.Settings.get_default ();
+
+        // Create header elements
+        // A switch between light & dark mode, from /Widgets/ModeSwitch
+        var light_mode_switch = new ModeSwitch ("display-brightness-symbolic", "weather-clear-night-symbolic");
+        light_mode_switch.primary_icon_tooltip_text = "Light background";
+        light_mode_switch.secondary_icon_tooltip_text = "Dark background";
+        light_mode_switch.valign = Gtk.Align.CENTER;
+        light_mode_switch.bind_property ("active", gtk_settings, "gtk_application_prefer_dark_theme");
+
+        // Create the actual header, and add previous elements
+        var header = new Gtk.HeaderBar ();
+        header.show_close_button = true;
+        header.pack_end (light_mode_switch);
+        header.pack_end (new Gtk.Separator (Gtk.Orientation.VERTICAL));
+        
+        return header;
+    }
+
+    private Gtk.Box make_body () {
+        var website_icon_label = new Gtk.Label ("Icon");
+        var website_icon = new Gtk.Image.from_icon_name ("application-default-icon", Gtk.IconSize.DIALOG);
+        
+        var website_name = new Gtk.Label ("Title");
+        var website_name_entry = new Gtk.Entry ();
+
+        var website_url = new Gtk.Label ("Website");
+        var website_url_entry = new Gtk.Entry ();
+
+        var result = new Gtk.Label ("");
+
+        var reset_input_image = new Gtk.Image.from_icon_name ("edit-clear", Gtk.IconSize.DIALOG);
+        reset_input_image.margin = 12;
+        var reset_input_event_box = new Gtk.EventBox ();
+        reset_input_event_box.add (reset_input_image);
+        reset_input_event_box.button_press_event.connect (() => {
+            website_name_entry.set_text ("");
+            website_url_entry.set_text ("");
+            result.label = "";
+            return true;
+        });
+
+        var load_website = new Gtk.Button.with_label ("Load");
+        load_website.margin = 4;
+        load_website.clicked.connect (() => {
+            load_website.label = "Loading...";
+            load_website.sensitive = false;
+        });
+
+        var create_desktop_link = new Gtk.Button.with_label ("Create desktop link");
+        create_desktop_link.margin = 4;
+        create_desktop_link.clicked.connect (() => {
+            string strWebsiteLink = website_url_entry.get_text ();
+            string strName = website_name_entry.get_text ();
+ 
+            bool is_filled_in = true;
+            if (strWebsiteLink.length == 0) {
+                is_filled_in = false;
+                result.label = "Paste in a website URL\n";
+            }
+            if (strName.length == 0) {
+                is_filled_in = false;
+                result.label += "Give the website a title\n";
+            }
+
+            if (is_filled_in) {
+                result.label = strName + " created!";
+            } else {
+                result.label += "And try again.";
+            }
+        });
+
+        var grid = new Gtk.Grid (); 
+        grid.row_spacing = 3;
+        grid.column_spacing = 10;
+
+        // attach (element, left, top, width=1, height=1)
+        grid.attach (website_url, 0, 0);
+        grid.attach (website_url_entry, 1, 0);
+        grid.attach (load_website, 2, 0);
+
+        grid.attach (website_name, 0, 1);
+        grid.attach (website_name_entry, 1, 1);
+
+        grid.attach (website_icon_label, 0, 2);
+        grid.attach (website_icon, 1, 2);
+
+        var box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
+        box.margin = 10;
+        box.add (reset_input_event_box);
+        
+        box.add (grid);
+
+        box.add (create_desktop_link);
+        box.add (result);
+        return box;
     }
 }

@@ -20,6 +20,9 @@
 */
 
 public class Cloudhop : Gtk.Application { 
+    // public static GLib.Settings settings;
+    private MainWindow main_window;
+
     public Cloudhop () {
         Object (
             application_id: "com.github.bertgoens.cloudhop",
@@ -27,18 +30,31 @@ public class Cloudhop : Gtk.Application {
         );
     }
 
+    static construct {
+
+    }
+
     protected override void activate () {
-        var app_window = new MainWindow (this);
-        app_window.show_all ();
+        // Force focus existing window, if it exists
+        if (get_windows ().length () > 0) {
+            get_windows ().data.present ();
+            return;
+        }
+
+        main_window = new MainWindow (this);
+        // Optional: read and apply size from settings
+        main_window.show_all ();
 
         var quit_action = new SimpleAction ("quit", null);
 
         add_action (quit_action);
         set_accels_for_action ("app.quit", {"Escape"});
 
+        // Optional: Override CSS with custom Gtk CSS (Application.css)
+
         quit_action.activate.connect (() => {
-            if (app_window != null) {
-                app_window.destroy ();
+            if (main_window != null) {
+                main_window.destroy ();
             }
         });
     }
