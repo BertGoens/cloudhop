@@ -51,6 +51,8 @@ public class MainWindow : Gtk.Window {
         light_mode_switch.secondary_icon_tooltip_text = "Dark background";
         light_mode_switch.valign = Gtk.Align.CENTER;
         light_mode_switch.bind_property ("active", gtk_settings, "gtk_application_prefer_dark_theme");
+        // Breaks the application
+        //Cloudhop.settings.bind ("prefer-dark-style", light_mode_switch, "active", GLib.SettingsBindFlags.DEFAULT);
 
         // Create the actual header, and add previous elements
         var header = new Gtk.HeaderBar ();
@@ -74,7 +76,7 @@ public class MainWindow : Gtk.Window {
         var result = new Gtk.Label ("");
 
         var reset_input_image = new Gtk.Image.from_icon_name ("edit-clear", Gtk.IconSize.DIALOG);
-        reset_input_image.margin = 12;
+        reset_input_image.margin_bottom = 12;
         var reset_input_event_box = new Gtk.EventBox ();
         reset_input_event_box.add (reset_input_image);
         reset_input_event_box.button_press_event.connect (() => {
@@ -93,6 +95,7 @@ public class MainWindow : Gtk.Window {
 
         var create_desktop_link = new Gtk.Button.with_label ("Create desktop link");
         create_desktop_link.margin = 4;
+        create_desktop_link.margin_top = 40;
         create_desktop_link.clicked.connect (() => {
             string strWebsiteLink = website_url_entry.get_text ();
             string strName = website_name_entry.get_text ();
@@ -138,5 +141,14 @@ public class MainWindow : Gtk.Window {
         box.add (create_desktop_link);
         box.add (result);
         return box;
+    }
+
+    public override bool configure_event (Gdk.EventConfigure event) {
+        int root_x, root_y;
+        get_position (out root_x, out root_y);
+        Cloudhop.settings.set_int ("window-x", root_x);
+        Cloudhop.settings.set_int ("window-y", root_y);
+
+        return base.configure_event (event);
     }
 }

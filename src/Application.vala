@@ -20,7 +20,7 @@
 */
 
 public class Cloudhop : Gtk.Application { 
-    // public static GLib.Settings settings;
+    public static GLib.Settings settings;
     private MainWindow main_window;
 
     public Cloudhop () {
@@ -31,7 +31,7 @@ public class Cloudhop : Gtk.Application {
     }
 
     static construct {
-
+        settings = new Settings ("com.github.bertgoens.cloudhop");
     }
 
     protected override void activate () {
@@ -42,7 +42,14 @@ public class Cloudhop : Gtk.Application {
         }
 
         main_window = new MainWindow (this);
-        // Optional: read and apply size from settings
+
+        // Read and apply our saved window position
+        var window_x = settings.get_int ("window-x");
+        var window_y = settings.get_int ("window-y");
+        if (window_x != -1 ||  window_y != -1) {
+            main_window.move (window_x, window_y);
+        }
+
         main_window.show_all ();
 
         var quit_action = new SimpleAction ("quit", null);
@@ -50,7 +57,13 @@ public class Cloudhop : Gtk.Application {
         add_action (quit_action);
         set_accels_for_action ("app.quit", {"Escape"});
 
-        // Optional: Override CSS with custom Gtk CSS (Application.css)
+        var provider = new Gtk.CssProvider ();
+        provider.load_from_resource ("com/github/bertgoens/cloudhop/Application.css");
+        Gtk.StyleContext.add_provider_for_screen (
+            Gdk.Screen.get_default (), 
+            provider, 
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        );
 
         quit_action.activate.connect (() => {
             if (main_window != null) {
